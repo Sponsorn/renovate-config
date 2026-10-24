@@ -1,0 +1,85 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Shared Renovate preset for Sponsorn repos",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard"
+  ],
+  "timezone": "Europe/Stockholm",
+  "schedule": [
+    "before 6am on monday"
+  ],
+  "separateMajorMinor": true,
+  "separateMultipleMajor": true,
+  "internalChecksFilter": "strict",
+  "ignoreTests": false,
+  "dockerfile": {
+    "enabled": true
+  },
+  "docker-compose": {
+    "enabled": true
+  },
+  "nvm": {
+    "enabled": true
+  },
+  "nodenv": {
+    "enabled": true
+  },
+  "github-actions": {
+    "enabled": true
+  },
+  "osvVulnerabilityAlerts": true,
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "minimumReleaseAge": null,
+    "schedule": [
+      "at any time"
+    ],
+    "labels": [
+      "security"
+    ]
+  },
+  "packageRules": [
+    {
+      "description": "One weekly PR per repo for all minor and patch updates",
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch"
+    },
+    {
+      "description": "Patch updates to npm devDependencies get their own group and automerge once CI passes. Kept out of the main group so runtime deps are never automerged.",
+      "matchDepTypes": [
+        "devDependencies"
+      ],
+      "matchUpdateTypes": [
+        "patch"
+      ],
+      "groupName": "devDependencies (patch)",
+      "groupSlug": "dev-patch",
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": false
+    },
+    {
+      "description": "Majors always get their own PR",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "automerge": false,
+      "labels": [
+        "major"
+      ]
+    },
+    {
+      "description": "Wait 3 days before proposing new npm/PyPI versions (protects against freshly hijacked releases). Security fixes bypass this via vulnerabilityAlerts.",
+      "matchDatasources": [
+        "npm",
+        "pypi"
+      ],
+      "minimumReleaseAge": "3 days"
+    }
+  ]
+}
